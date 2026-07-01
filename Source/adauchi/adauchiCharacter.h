@@ -49,9 +49,13 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
 
-	/*Attacj Input Action*/ 
+	/*LightPunch Input Action*/ 
 	UPROPERTY(EditAnywhere, Category="Input")
-	UInputAction* AttackAction;
+	UInputAction* LightPunchAction;
+
+	/*LightKick Input Action*/
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* LightKickAction;
 
 public:
 
@@ -90,12 +94,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoJumpEnd();
 
-	/*アタック関数*/
+	/** LightPunch */
 	UFUNCTION(BlueprintCallable, Category = "Input")
-	virtual void DoAttack();
+	virtual void DoLightPunch();
 
+	/** LightKick */
 	UFUNCTION(BlueprintCallable, Category = "Input")
-	virtual void Attack();
+	virtual void DoLightKick();
+
+
 
 public:
 

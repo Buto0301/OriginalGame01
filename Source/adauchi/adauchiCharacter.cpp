@@ -66,8 +66,11 @@ void AadauchiCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AadauchiCharacter::Look);
 
-		//Attack
-		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &AadauchiCharacter::DoAttack);
+		//LightPunch
+		EnhancedInputComponent->BindAction(LightPunchAction, ETriggerEvent::Started, this, &AadauchiCharacter::DoLightPunch);
+
+		//LightKick
+		EnhancedInputComponent->BindAction(LightKickAction, ETriggerEvent::Started, this, &AadauchiCharacter::DoLightKick);
 
 	}
 	else
@@ -136,22 +139,37 @@ void AadauchiCharacter::DoJumpEnd()
 	StopJumping();
 }
 
-void AadauchiCharacter::Attack()
+void AadauchiCharacter::DoLightPunch()
 {
+	UE_LOG(LogTemp, Warning, TEXT("LP Attack!"));
 	if (GEngine)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("LP Attack!"));
+
 
 		GEngine->AddOnScreenDebugMessage(
 			-1,
-			2.0f,
+			5.0f,
 			FColor::Yellow,
 			TEXT("LP Attack!")
 		);
 	}
 }
 
-void AadauchiCharacter::DoAttack() 
+void AadauchiCharacter::DoLightKick()
 {
-	Attack();
+	UE_LOG(LogTemp, Warning, TEXT("LK Attack!"));
+	if (GEngine)
+	{
+		
+
+		GEngine->AddOnScreenDebugMessage(
+			-1,
+			5.0f,
+			FColor::Blue,
+			TEXT("LK Attack!")
+		);
+	}
+	
 }
+
+
