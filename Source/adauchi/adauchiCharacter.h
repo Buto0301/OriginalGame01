@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "Timermanager.h"
 #include "adauchiCharacter.generated.h"
+
 
 class USpringArmComponent;
 class UCameraComponent;
@@ -111,5 +113,15 @@ public:
 
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+
+private:
+	/** Attacking State **/
+	bool bIsAttacking = false;
+
+	/**TimeManagerを使用して、状態の終了を管理する**/
+	FTimerHandle AttackTimerHandle;
+
+	void EndAttack();
 };
 

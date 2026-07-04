@@ -11,6 +11,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "adauchi.h"
+#include "TimerManager.h"
 
 AadauchiCharacter::AadauchiCharacter()
 {
@@ -141,11 +142,21 @@ void AadauchiCharacter::DoJumpEnd()
 
 void AadauchiCharacter::DoLightPunch()
 {
-	UE_LOG(LogTemp, Warning, TEXT("LP Attack!"));
 	if (GEngine)
 	{
 
+		if (bIsAttacking) {
+			return;
+		}
+		GetWorldTimerManager().SetTimer(
+			AttackTimerHandle,
+			this,
+			&AadauchiCharacter::EndAttack,
+			0.4f,
+			false
+		);
 
+		bIsAttacking = true;
 		GEngine->AddOnScreenDebugMessage(
 			-1,
 			5.0f,
@@ -161,15 +172,31 @@ void AadauchiCharacter::DoLightKick()
 	if (GEngine)
 	{
 		
+		if (bIsAttacking) {
+			return ;
+		}
 
+		bIsAttacking = true;
+		GetWorldTimerManager().SetTimer(
+			AttackTimerHandle,
+			this,
+			&AadauchiCharacter::EndAttack,
+			0.4f,
+			false
+
+		);
 		GEngine->AddOnScreenDebugMessage(
 			-1,
 			5.0f,
 			FColor::Blue,
 			TEXT("LK Attack!")
 		);
+		
 	}
 	
 }
 
+void AadauchiCharacter::EndAttack() {
+	bIsAttacking = false;
+}
 
