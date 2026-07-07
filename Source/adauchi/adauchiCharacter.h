@@ -51,13 +51,14 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
 
-	/*LightPunch Input Action*/ 
+	/**LightPunch Input Action*/ 
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* LightPunchAction;
 
-	/*LightKick Input Action*/
+	/**LightKick Input Action*/
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* LightKickAction;
+
 
 public:
 
@@ -123,5 +124,9 @@ private:
 	FTimerHandle AttackTimerHandle;
 
 	void EndAttack();
+
+	/** puhchconbo_montage*/
+	UPROPERTY(EditAnywhere, BlurprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UAnimMontage> LightpunchMontage;
 };
 
