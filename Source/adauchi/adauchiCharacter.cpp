@@ -100,6 +100,10 @@ void AadauchiCharacter::Look(const FInputActionValue& Value)
 
 void AadauchiCharacter::DoMove(float Right, float Forward)
 {
+	/** if Character is attaking, cannot move.*/
+	if (bIsAttacking) {
+		return;
+	}
 	if (GetController() != nullptr)
 	{
 		// find out which way is forward
