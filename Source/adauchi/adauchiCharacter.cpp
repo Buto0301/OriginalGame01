@@ -142,12 +142,12 @@ void AadauchiCharacter::DoJumpEnd()
 
 void AadauchiCharacter::DoLightPunch()
 {
-	if (GEngine)
-	{
+	
 
 		if (bIsAttacking) {
 			return;
 		}
+		/**Timer
 		GetWorldTimerManager().SetTimer(
 			AttackTimerHandle,
 			this,
@@ -155,28 +155,71 @@ void AadauchiCharacter::DoLightPunch()
 			0.4f,
 			false
 		);
+		*/
 
+		//Attack Stage On
 		bIsAttacking = true;
-		GEngine->AddOnScreenDebugMessage(
-			-1,
-			5.0f,
-			FColor::Yellow,
-			TEXT("LP Attack!")
-		);
-	}
+
+		//Montage Play
+		if (LightPunchMontage) {
+			
+
+			UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+			FOnMontageEnded EndDelegate;
+
+			EndDelegate.BindUObject(
+				this,
+				&AadauchiCharacter::OnAttackMontageEnded
+			);
+
+			
+			PlayAnimMontage(LightPunchMontage);
+
+			AnimInstance->Montage_SetEndDelegate(
+				EndDelegate,
+				LightPunchMontage
+			);
+			/** Use for debug
+			if (AnimInstance)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("AnimInstance OK"));
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("AnimInstance is NULL!"));
+			}
+
+			UE_LOG(LogTemp, Warning, TEXT("Delegate Bind OK"));
+
+			UE_LOG(LogTemp, Warning, TEXT("Montage End Delegate Set"));
+			*/
+				
+		}
+
+		/** Use for debug*/
+		if (GEngine) {
+			GEngine->AddOnScreenDebugMessage(
+				-1,
+				5.0f,
+				FColor::Yellow,
+				TEXT("LP Attack!")
+				
+			);
+		}
 }
 
 void AadauchiCharacter::DoLightKick()
 {
 	UE_LOG(LogTemp, Warning, TEXT("LK Attack!"));
-	if (GEngine)
-	{
 		
 		if (bIsAttacking) {
 			return ;
 		}
 
 		bIsAttacking = true;
+		
+		/**Delegate‚ðŽg‚¤‚Ì‚Å‚à‚¤Žg‚í‚È‚¢B
 		GetWorldTimerManager().SetTimer(
 			AttackTimerHandle,
 			this,
@@ -185,14 +228,17 @@ void AadauchiCharacter::DoLightKick()
 			false
 
 		);
-		GEngine->AddOnScreenDebugMessage(
-			-1,
-			5.0f,
-			FColor::Blue,
-			TEXT("LK Attack!")
-		);
+		*/
+		if (GEngine) {
+			GEngine->AddOnScreenDebugMessage(
+				-1,
+				5.0f,
+				FColor::Blue,
+				TEXT("LK Attack!")
+			);
+		}
 		
-	}
+	
 	
 }
 
@@ -200,3 +246,16 @@ void AadauchiCharacter::EndAttack() {
 	bIsAttacking = false;
 }
 
+void AadauchiCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted) {
+	UE_LOG(
+		LogTemp,
+		Warning,
+		TEXT("Montage Ended: %s / Interrupted = %s"),
+		*GetNameSafe(Montage),
+		bInterrupted ? TEXT("true") : TEXT("false")
+		);
+
+
+	EndAttack();
+
+}

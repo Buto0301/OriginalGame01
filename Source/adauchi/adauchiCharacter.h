@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
-#include "Timermanager.h"
+/**#include "Timermanager.h"*/
 #include "adauchiCharacter.generated.h"
 
 
@@ -107,6 +107,10 @@ public:
 
 
 
+	
+
+
+
 public:
 
 	/** Returns CameraBoom subobject **/
@@ -120,13 +124,19 @@ private:
 	/** Attacking State **/
 	bool bIsAttacking = false;
 
-	/**TimeManagerを使用して、状態の終了を管理する**/
-	FTimerHandle AttackTimerHandle;
+	/**TimeManagerを使用して、状態の終了を管理する(タイマーからDelegate型に変更したので、もう使わない)**/
+	/**FTimerHandle AttackTimerHandle;*/
 
+	/** 攻撃終了Delegateで呼び出す、実際に攻撃を終了させる関数*/
 	void EndAttack();
 
 	/** puhchconbo_montage*/
-	UPROPERTY(EditAnywhere, BlurprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UAnimMontage> LightpunchMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UAnimMontage> LightPunchMontage;
+
+	/** Attack Ended state*/
+	UFUNCTION()
+	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted );
+
 };
 
