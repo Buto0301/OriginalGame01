@@ -105,6 +105,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	virtual void DoLightKick();
 
+	/** Attacking hitbox activate*/
+	void AttackHitCheck();
 
 
 	
@@ -118,6 +120,8 @@ public:
 
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+
 
 
 private:

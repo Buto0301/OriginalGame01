@@ -11,7 +11,13 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "adauchi.h"
-#include "TimerManager.h"
+#include "DrawDebugHelpers.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "CollisionQueryParams.h"
+#include "CollisionShape.h"
+#include "Engine/World.h"
+
+
 
 AadauchiCharacter::AadauchiCharacter()
 {
@@ -261,5 +267,99 @@ void AadauchiCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterr
 
 
 	EndAttack();
+
+}
+
+/** Attacking Hit Check*/
+void AadauchiCharacter::AttackHitCheck() {
+	UE_LOG(LogTemp, Warning, TEXT("AttackHitCheck called."));
+
+	const FName AttackSocketName(TEXT("hand_l"));
+
+	if (!GetMesh() || !GetMesh()->DoesSocketExist(AttackSocketName)) {
+		UE_LOG(
+			LogTemp, 
+			Error, 
+			TEXT("AttackSocket was not found")
+			);
+
+		return;
+	}
+
+	const FVector Start = GetMesh()->GetSocketLocation(AttackSocketName);
+	const float AttackDistance = 40.0f;
+	const float AttackRadius = 25.0f;
+	
+	const FVector End = Start + GetActorForwardVector() * AttackDistance;
+
+	FHitResult HitResult;
+	FCollisionQueryParams  QueryParams;
+	QueryParams.AddIgnoredActor(this);
+
+	const FCollisionShape AttackShape = FCollisionShape::MakeSphere(AttackRadius);
+
+	const bool bHit = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		Start,
+		End,
+		FQuat::Identity,
+		ECC_Pawn,
+		AttackShape,
+		QueryParams
+	);
+
+	const FColor DebugColor =
+		bHit ? FColor::Green : FColor::Red;
+
+	DrawDebugSphere(
+		GetWorld(),
+		Start,
+		8.0f,
+		12,
+		FColor::Blue,
+		false,
+		2.0f
+	);
+
+	DrawDebugSphere(
+		GetWorld(),
+		End,
+		AttackRadius,
+		16,
+		DebugColor,
+		false,
+		2.0f
+	);
+
+	DrawDebugLine(
+		GetWorld(),
+		Start,
+		End,
+		DebugColor,
+		false,
+		2.0f,
+		0,
+		3.0f
+
+	);
+
+	if (bHit && HitResult.GetActor()) {
+		UE_LOG(
+			LogTemp,
+			Warning,
+			TEXT("Attack hit: %s"),
+			*HitResult.GetActor()->GetName()
+		);
+	} 
+	else {
+		UE_LOG(
+			LogTemp,
+			Warning,
+			TEXT("Attack missed.")
+		)
+	}
+
+
+
 
 }
