@@ -16,6 +16,8 @@
 #include "CollisionQueryParams.h"
 #include "CollisionShape.h"
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameFramework/DamageType.h"
 
 
 
@@ -298,19 +300,21 @@ void AadauchiCharacter::AttackHitCheck() {
 
 	const FCollisionShape AttackShape = FCollisionShape::MakeSphere(AttackRadius);
 
-	const bool bHit = GetWorld()->SweepSingleByChannel(
+	const FCollisionObjectQueryParams ObjectQueryParams(ECC_Pawn);
+
+	const bool bHit = GetWorld()->SweepSingleByObjectType(
 		HitResult,
 		Start,
 		End,
 		FQuat::Identity,
-		ECC_Pawn,
+		ObjectQueryParams,
 		AttackShape,
 		QueryParams
 	);
 
-	const FColor DebugColor =
-		bHit ? FColor::Green : FColor::Red;
+	const FColor DebugColor = bHit ? FColor::Green : FColor::Red;
 
+	/**Display Start Sphere*/
 	DrawDebugSphere(
 		GetWorld(),
 		Start,
@@ -320,7 +324,7 @@ void AadauchiCharacter::AttackHitCheck() {
 		false,
 		2.0f
 	);
-
+	/**Display End Sphere*/
 	DrawDebugSphere(
 		GetWorld(),
 		End,
@@ -331,6 +335,7 @@ void AadauchiCharacter::AttackHitCheck() {
 		2.0f
 	);
 
+	/**Display Line (Start to End)*/
 	DrawDebugLine(
 		GetWorld(),
 		Start,
@@ -344,22 +349,34 @@ void AadauchiCharacter::AttackHitCheck() {
 	);
 
 	if (bHit && HitResult.GetActor()) {
+		AActor* HitActor = HitResult.GetActor();
+
 		UE_LOG(
 			LogTemp,
 			Warning,
 			TEXT("Attack hit: %s"),
 			*HitResult.GetActor()->GetName()
 		);
+
+		const float DamageAmount = 10.0f;
+		
+		const float AppliedDamage = UGameplayStatics::ApplyDamage(
+			HitActor,
+			DamageAmount,
+			GetController(),
+			this,
+			UDamageType::StaticClass()
+
+		);
+
+		UE_LOG(LogTemp, Warning, TEXT("Applied Damage: %.1f"), AppliedDamage);
 	} 
 	else {
 		UE_LOG(
 			LogTemp,
 			Warning,
 			TEXT("Attack missed.")
-		)
+			);
 	}
-
-
-
 
 }
