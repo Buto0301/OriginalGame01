@@ -8,7 +8,7 @@
 /**#include "Timermanager.h"*/
 #include "adauchiCharacter.generated.h"
 
-
+class AEnemyCharacter;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
@@ -141,6 +141,12 @@ private:
 	/** Attack Ended state*/
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted );
+
+	/**UŒ‚ŠJn‚ÉüˆÍ‚©‚ç‘ÎÌ‚ğ’T‚· */
+	AEnemyCharacter* FindAttackTarget() const;
+
+	/**Œ»İ‚ÌUŒ‚‘ÎÛ*/
+	TWeakObjectPtr<AEnemyCharacter> AttackTarget();
 
 };
 
