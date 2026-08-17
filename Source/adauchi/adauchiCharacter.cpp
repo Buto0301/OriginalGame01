@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "adauchiCharacter.h"
+#include "EnemyCharacter.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -16,8 +17,10 @@
 #include "CollisionQueryParams.h"
 #include "CollisionShape.h"
 #include "Engine/World.h"
+#include "Engine/OverlapResult.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/DamageType.h"
+
 
 
 
@@ -168,6 +171,7 @@ void AadauchiCharacter::DoLightPunch()
 			false
 		);
 		*/
+		AttackTarget = FindAttackTarget();
 
 		//Attack Stage On
 		bIsAttacking = true;
@@ -379,4 +383,53 @@ void AadauchiCharacter::AttackHitCheck() {
 			);
 	}
 
+}
+
+AEnemyCharacter* AadauchiCharacter::FindAttackTarget() const{
+	constexpr float SearchRadius = 200.0f;
+
+	TArray<FOverlapResult> OverlapResults;
+
+	FCollisionObjectQueryParams ObjectQueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+
+	UWorld* World = GetWorld();
+
+	if (!World) {
+		return nullptr;
+	}
+
+	const bool bFoundOverlap = World->OverlapMultiByObjectType(
+		OverlapResults,
+		GetActorLocation(),
+		FQuat::Identity,
+		ObjectQueryParams,
+		FCollisionShape::MakeSphere(SearchRadius),
+		QueryParams
+	);
+
+	DrawDebugSphere(
+		World,
+		GetActorLocation(),
+		SearchRadius,
+		32,
+		FColor::Blue,
+		false,
+		2.f
+	);
+
+	UE_LOG(
+		LogTemp,
+		Warning,
+		TEXT("Found Overlap %s / Overlap count: %d"),
+		bFoundOverlap ? TEXT("True") : TEXT("False"),
+		OverlapResults.Num()
+		);
+
+	
+
+	return nullptr;
 }

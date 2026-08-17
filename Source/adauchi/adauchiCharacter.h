@@ -146,7 +146,7 @@ private:
 	AEnemyCharacter* FindAttackTarget() const;
 
 	/**Œ»İ‚ÌUŒ‚‘ÎÛ*/
-	TWeakObjectPtr<AEnemyCharacter> AttackTarget();
+	TWeakObjectPtr<AEnemyCharacter> AttackTarget;
 
 };
 
