@@ -429,6 +429,37 @@ AEnemyCharacter* AadauchiCharacter::FindAttackTarget() const{
 		OverlapResults.Num()
 		);
 
+	TSet<AEnemyCharacter*> ProcessedEnemies;
+
+	for (const FOverlapResult& OverlapResult : OverlapResults) {
+		AActor* OverlappedActor = OverlapResult.GetActor();
+
+		AEnemyCharacter* EnemyCharacter = Cast<AEnemyCharacter>(OverlappedActor);
+
+		if (!EnemyCharacter) {
+			continue;
+		}
+
+		if (ProcessedEnemies.Contains(EnemyCharacter)) {
+			continue;
+		}
+
+		ProcessedEnemies.Add(EnemyCharacter);
+
+		UE_LOG(
+			LogTemp, 
+			Warning, 
+			TEXT("Enemy Candidate found: %s"),
+			*EnemyCharacter->GetName());
+
+		UE_LOG(
+			LogTemp,
+			Warning,
+			TEXT("Unique enemy count: %d"),
+			ProcessedEnemies.Num()
+		);
+	}
+
 	
 
 	return nullptr;
