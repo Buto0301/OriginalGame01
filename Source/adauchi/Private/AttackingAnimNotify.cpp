@@ -3,9 +3,9 @@
 #include "AttackingAnimNotify.h"
 #include "adauchiCharacter.h"
 
-void UAttackingAnimNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) {
+void UAttackingAnimNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) {
 	UE_LOG(LogTemp, Warning, TEXT("AttackingAnimNotify called"));
-	Super::Notify(MeshComp, Animation);
+	Super::Notify(MeshComp, Animation, EventReference);
 
 	if (!MeshComp) {
 		return;
