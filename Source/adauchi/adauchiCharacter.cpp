@@ -173,7 +173,19 @@ void AadauchiCharacter::DoLightPunch()
 		*/
 		AttackTarget = FindAttackTarget();
 
-		//Attack Stage On
+		if (AttackTarget.IsValid()) {
+			UE_LOG(
+			LogTemp, 
+			Warning, 
+			TEXT("AttackTarget selected: %s"),
+			*AttackTarget->GetName());
+
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("AttackTarget was not found."));
+		}
+		//Attack State On
 		bIsAttacking = true;
 
 		//Montage Play
@@ -430,7 +442,8 @@ AEnemyCharacter* AadauchiCharacter::FindAttackTarget() const{
 		);
 
 	TSet<AEnemyCharacter*> ProcessedEnemies;
-
+	AEnemyCharacter* ClosestEnemy = nullptr;
+	float ClosestDistanceSquared = TNumericLimits<float>::Max();
 	for (const FOverlapResult& OverlapResult : OverlapResults) {
 		AActor* OverlappedActor = OverlapResult.GetActor();
 
@@ -445,6 +458,28 @@ AEnemyCharacter* AadauchiCharacter::FindAttackTarget() const{
 		}
 
 		ProcessedEnemies.Add(EnemyCharacter);
+
+		const FVector ForwardVector = GetActorForwardVector().GetSafeNormal2D();
+
+		const FVector DirectionToEnemy = (EnemyCharacter->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
+
+		const float Dot = FVector::DotProduct(ForwardVector, DirectionToEnemy);
+
+		if (Dot < 0.707f) {
+			continue;
+		}
+
+		const float DistanceSquared = FVector::DistSquared2D(
+			GetActorLocation(),
+			EnemyCharacter->GetActorLocation()
+		);
+
+		if (DistanceSquared < ClosestDistanceSquared) {
+			ClosestDistanceSquared = DistanceSquared;
+			ClosestEnemy = EnemyCharacter;
+		}
+
+
 
 		UE_LOG(
 			LogTemp, 
@@ -462,5 +497,5 @@ AEnemyCharacter* AadauchiCharacter::FindAttackTarget() const{
 
 	
 
-	return nullptr;
+	return ClosestEnemy;
 }

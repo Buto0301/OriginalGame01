@@ -6,7 +6,9 @@
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 /**#include "Timermanager.h"*/
+#include "EnemyCharacter.h"
 #include "adauchiCharacter.generated.h"
+
 
 class AEnemyCharacter;
 class USpringArmComponent;
