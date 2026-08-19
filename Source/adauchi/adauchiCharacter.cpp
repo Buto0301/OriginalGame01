@@ -180,6 +180,8 @@ void AadauchiCharacter::DoLightPunch()
 			TEXT("AttackTarget selected: %s"),
 			*AttackTarget->GetName());
 
+			FaceAttackTarget();
+
 		}
 		else
 		{
@@ -498,4 +500,28 @@ AEnemyCharacter* AadauchiCharacter::FindAttackTarget() const{
 	
 
 	return ClosestEnemy;
+}
+
+void AadauchiCharacter::FaceAttackTarget() {
+	if (!AttackTarget.IsValid()) {
+		return;
+	}
+
+	FVector DirectionToTarget = AttackTarget->GetActorLocation() - GetActorLocation();
+
+	//è„â∫Ç≈ÇÕÇ»Ç≠ç∂âEÇÃÇ›í≤êÆÇ∑ÇÈ
+	DirectionToTarget.Z = 0.0f;
+
+	if (DirectionToTarget.IsNearlyZero()) {
+		return;
+	}
+
+	const FRotator TargetRotation = DirectionToTarget.Rotation();
+
+	SetActorRotation(
+		FRotator(0.0f, TargetRotation.Yaw, 0.0f)
+	);
+
+
+
 }

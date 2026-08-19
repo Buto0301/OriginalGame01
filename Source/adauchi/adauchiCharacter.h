@@ -150,5 +150,8 @@ private:
 	/**Œ»İ‚ÌUŒ‚‘ÎÛ*/
 	TWeakObjectPtr<AEnemyCharacter> AttackTarget;
 
+	/**AttackTarget‚Ì•ûŒü‚ÖƒvƒŒƒCƒ„[‚ğŒü‚¯‚é*/
+	void FaceAttackTarget();
+
 };
 
