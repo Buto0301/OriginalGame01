@@ -153,5 +153,7 @@ private:
 	/**AttackTargetの方向へプレイヤーを向ける*/
 	void FaceAttackTarget();
 
+	/** AttackTargetへある程度近づく*/
+	void MoveTowardAttackTarget();
 };
 

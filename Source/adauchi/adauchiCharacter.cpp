@@ -181,6 +181,7 @@ void AadauchiCharacter::DoLightPunch()
 			*AttackTarget->GetName());
 
 			FaceAttackTarget();
+			MoveTowardAttackTarget();
 
 		}
 		else
@@ -524,4 +525,41 @@ void AadauchiCharacter::FaceAttackTarget() {
 
 
 
+}
+
+void AadauchiCharacter::MoveTowardAttackTarget() {
+	if (!AttackTarget.IsValid()) {
+		return;
+	}
+
+	constexpr float DesiredDistance = 100.0f;
+	constexpr float MaxMoveDistance = 75.0f;
+
+	FVector DirectionToTarget = AttackTarget->GetActorLocation() - GetActorLocation();
+
+	//…•½•ûŒü‚¾‚¯ˆÚ“®‚·‚é
+	DirectionToTarget.Z = 0.0f;
+
+	const float DistanceToTarget = DirectionToTarget.Size();
+
+	if (DistanceToTarget <= DesiredDistance) {
+		return;
+	}
+	const FVector MoveDirection = DirectionToTarget.GetSafeNormal();
+
+	const float RequiredMoveDistance = DistanceToTarget - DesiredDistance;
+
+	const float ActualMoveDistance = FMath::Min(
+		RequiredMoveDistance,
+		MaxMoveDistance
+	);
+
+	const FVector MoveOffset = MoveDirection * ActualMoveDistance;
+
+	FHitResult SweepHit;
+
+	AddActorWorldOffset(
+		MoveOffset,
+		true,
+		&SweepHit);
 }
