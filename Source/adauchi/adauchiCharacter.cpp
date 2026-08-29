@@ -563,3 +563,52 @@ void AadauchiCharacter::MoveTowardAttackTarget() {
 		true,
 		&SweepHit);
 }
+
+void AadauchiCharacter::Tick(float DeltaTime) {
+	Super::Tick(DeltaTime);
+
+	UpdateAttackMovement(DeltaTime);
+}
+
+void AadauchiCharacter::UpdateAttackMovement(float DeltaTime) {
+	if (!bIsAttacking) {
+		return;
+	}
+
+	FVector DirectionToDestination = AttackMoveDestination - GetActorLocation();
+
+	//çÇÇ≥ï˚å¸Ç…ÇÕéwíËÇµÇ»Ç¢
+	DirectionToDestination.Z = 0.0f;
+
+	const float RemainingDistance = DirectionToDestination.Size();
+
+	const float MoveDistance = AttackMoveSpeed * DeltaTime;
+
+	if (RemainingDistance <= MoveDistance) {
+		AddActorWorldOffset(
+			DirectionToDestination,
+			true
+		);
+
+		bIsAttackMoving = false;
+		return;
+	}
+
+	const FVector MoveDirection = DirectionToDestination.GetSafeNormal();
+
+	const FVector MoveOffset = MoveDirection * MoveDistance;
+
+	FHitResult SweepHit;
+
+	AddActorWorldOffset(
+		MoveOffset,
+		true,
+		&SweepHit);
+
+	if (SweepHit.bBlockingHit) {
+		bIsAttackMoving = false;
+	}
+
+
+}
+

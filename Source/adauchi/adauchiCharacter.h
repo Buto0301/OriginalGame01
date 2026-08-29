@@ -123,7 +123,7 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
-
+	virtual void Tick(float DeltaTime) override;
 
 
 private:
@@ -155,5 +155,16 @@ private:
 
 	/** AttackTarget‚Ö‚ ‚é’ö“x‹ß‚Ã‚­*/
 	void MoveTowardAttackTarget();
+
+	/**Updates the short movement toward the AttackTarget*/
+	void UpdateAttackMovement(float DeltaTime);
+
+	/**Whether attack movement is currently active*/
+	bool bIsAttackMoving = false;
+
+	/**Destination of the current attack movement*/
+	FVector AttackMoveDestination = FVector::ZeroVector;
+	/**Moving speed during attack target correction*/
+	float AttackMoveSpeed = 750.0f;
 };
 
