@@ -229,7 +229,7 @@ void AadauchiCharacter::DoLightPunch()
 		}
 
 		/** Use for debug*/
-		if (GEngine) {
+		if (GEngine && bShowAttackDebug) {
 			GEngine->AddOnScreenDebugMessage(
 				-1,
 				5.0f,
@@ -250,17 +250,8 @@ void AadauchiCharacter::DoLightKick()
 
 		bIsAttacking = true;
 		
-		/**Delegateを使うのでもう使わない。
-		GetWorldTimerManager().SetTimer(
-			AttackTimerHandle,
-			this,
-			&AadauchiCharacter::EndAttack,
-			0.4f,
-			false
 
-		);
-		*/
-		if (GEngine) {
+		if (GEngine && bShowAttackDebug) {
 			GEngine->AddOnScreenDebugMessage(
 				-1,
 				5.0f,
@@ -365,40 +356,42 @@ void AadauchiCharacter::AttackHitCheck()
 		DebugColor = FColor::Yellow;
 	}
 
-	// 攻撃判定の開始位置
-	DrawDebugSphere(
-		GetWorld(),
-		Start,
-		8.0f,
-		12,
-		FColor::Blue,
-		false,
-		2.0f
-	);
+	if (bShowAttackDebug)
+	{
+		// 攻撃判定の開始位置
+		DrawDebugSphere(
+			GetWorld(),
+			Start,
+			8.0f,
+			12,
+			FColor::Blue,
+			false,
+			2.0f
+		);
 
-	// 攻撃判定の終了位置
-	DrawDebugSphere(
-		GetWorld(),
-		End,
-		AttackRadius,
-		16,
-		DebugColor,
-		false,
-		2.0f
-	);
+		// 攻撃判定の終了位置
+		DrawDebugSphere(
+			GetWorld(),
+			End,
+			AttackRadius,
+			16,
+			DebugColor,
+			false,
+			2.0f
+		);
 
-	// 攻撃判定の移動経路
-	DrawDebugLine(
-		GetWorld(),
-		Start,
-		End,
-		DebugColor,
-		false,
-		2.0f,
-		0,
-		3.0f
-	);
-
+		// 攻撃判定の移動経路
+		DrawDebugLine(
+			GetWorld(),
+			Start,
+			End,
+			DebugColor,
+			false,
+			2.0f,
+			0,
+			3.0f
+		);
+	}
 	if (HitEnemy)
 	{
 		UE_LOG(
@@ -479,16 +472,18 @@ AEnemyCharacter* AadauchiCharacter::FindAttackTarget() const{
 		QueryParams
 	);
 
-	DrawDebugSphere(
-		World,
-		GetActorLocation(),
-		SearchRadius,
-		32,
-		FColor::Blue,
-		false,
-		2.f
-	);
-
+	if (bShowAttackDebug)
+	{
+		DrawDebugSphere(
+			World,
+			GetActorLocation(),
+			SearchRadius,
+			32,
+			FColor::Blue,
+			false,
+			2.0f
+		);
+	}
 	UE_LOG(
 		LogTemp,
 		Warning,
@@ -547,17 +542,19 @@ AEnemyCharacter* AadauchiCharacter::FindAttackTarget() const{
 			bLineOfSightHit &&
 			LineOfSightHit.GetActor() == EnemyCharacter;
 
-		// 遮蔽判定をデバッグ表示する
-		DrawDebugLine(
-			World,
-			LineOfSightStart,
-			LineOfSightEnd,
-			bHasLineOfSight ? FColor::Green : FColor::Yellow,
-			false,
-			2.0f,
-			0,
-			2.0f
-		);
+		if (bShowAttackDebug)
+		{
+			DrawDebugLine(
+				World,
+				LineOfSightStart,
+				LineOfSightEnd,
+				bHasLineOfSight ? FColor::Green : FColor::Yellow,
+				false,
+				2.0f,
+				0,
+				2.0f
+			);
+		}
 
 		if (!bHasLineOfSight) {
 			UE_LOG(

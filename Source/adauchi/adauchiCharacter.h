@@ -130,8 +130,16 @@ private:
 	/** Attacking State **/
 	bool bIsAttacking = false;
 
-	/**TimeManagerを使用して、状態の終了を管理する(タイマーからDelegate型に変更したので、もう使わない)**/
-	/**FTimerHandle AttackTimerHandle;*/
+	/** 攻撃関連のデバッグ表示を切り替える */
+	UPROPERTY(
+		EditAnywhere,
+		BlueprintReadWrite,
+		Category = "Debug",
+		meta = (AllowPrivateAccess = "true")
+	)
+	bool bShowAttackDebug = true;
+
+
 
 	/** 攻撃終了Delegateで呼び出す、実際に攻撃を終了させる関数*/
 	void EndAttack();
