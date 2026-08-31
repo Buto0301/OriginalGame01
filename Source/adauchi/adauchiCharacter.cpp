@@ -455,7 +455,11 @@ AEnemyCharacter* AadauchiCharacter::FindAttackTarget() const{
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
 
-
+	//遮蔽判定で調べる物体
+	FCollisionObjectQueryParams LineOfSightObjectQueryParams;
+	LineOfSightObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
+	LineOfSightObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+	LineOfSightObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
 
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(this);
@@ -520,6 +524,53 @@ AEnemyCharacter* AadauchiCharacter::FindAttackTarget() const{
 		if (Dot < 0.707f) {
 			continue;
 		}
+
+		//自分から敵までLine Traceを行う
+		FHitResult LineOfSightHit;
+
+		const FVector LineOfSightStart = GetActorLocation();
+
+		const FVector LineOfSightEnd = EnemyCharacter->GetActorLocation();
+
+		const bool bLineOfSightHit =
+			World->LineTraceSingleByObjectType(
+				LineOfSightHit,
+				LineOfSightStart,
+				LineOfSightEnd,
+				LineOfSightObjectQueryParams,
+				QueryParams
+			);
+
+
+		// 最初に当たったActorが調査中の敵なら、壁に遮られていない
+		const bool bHasLineOfSight =
+			bLineOfSightHit &&
+			LineOfSightHit.GetActor() == EnemyCharacter;
+
+		// 遮蔽判定をデバッグ表示する
+		DrawDebugLine(
+			World,
+			LineOfSightStart,
+			LineOfSightEnd,
+			bHasLineOfSight ? FColor::Green : FColor::Yellow,
+			false,
+			2.0f,
+			0,
+			2.0f
+		);
+
+		if (!bHasLineOfSight) {
+			UE_LOG(
+				LogTemp,
+				Warning,
+				TEXT("Enemy was blocked by: %s"),
+				*GetNameSafe(LineOfSightHit.GetActor())
+			);
+
+			continue;
+		}
+
+
 
 		const float DistanceSquared = FVector::DistSquared2D(
 			GetActorLocation(),
