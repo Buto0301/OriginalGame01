@@ -275,6 +275,7 @@ void AadauchiCharacter::DoLightKick()
 
 void AadauchiCharacter::EndAttack() {
 	bIsAttacking = false;
+	bIsAttackMoving = false;
 }
 
 void AadauchiCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted) {
@@ -556,12 +557,10 @@ void AadauchiCharacter::MoveTowardAttackTarget() {
 
 	const FVector MoveOffset = MoveDirection * ActualMoveDistance;
 
-	FHitResult SweepHit;
+	AttackMoveDestination = GetActorLocation() + MoveOffset;
 
-	AddActorWorldOffset(
-		MoveOffset,
-		true,
-		&SweepHit);
+	bIsAttackMoving = true;
+
 }
 
 void AadauchiCharacter::Tick(float DeltaTime) {
@@ -571,7 +570,7 @@ void AadauchiCharacter::Tick(float DeltaTime) {
 }
 
 void AadauchiCharacter::UpdateAttackMovement(float DeltaTime) {
-	if (!bIsAttacking) {
+	if (!bIsAttacking || !bIsAttackMoving) {
 		return;
 	}
 
