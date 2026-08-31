@@ -293,34 +293,45 @@ void AadauchiCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterr
 }
 
 /** Attacking Hit Check*/
-void AadauchiCharacter::AttackHitCheck() {
+void AadauchiCharacter::AttackHitCheck()
+{
 	UE_LOG(LogTemp, Warning, TEXT("AttackHitCheck called."));
 
 	const FName AttackSocketName(TEXT("hand_l"));
 
-	if (!GetMesh() || !GetMesh()->DoesSocketExist(AttackSocketName)) {
+	if (!GetMesh() ||
+		!GetMesh()->DoesSocketExist(AttackSocketName))
+	{
 		UE_LOG(
-			LogTemp, 
-			Error, 
+			LogTemp,
+			Error,
 			TEXT("AttackSocket was not found")
-			);
+		);
 
 		return;
 	}
 
-	const FVector Start = GetMesh()->GetSocketLocation(AttackSocketName);
+	const FVector Start =
+		GetMesh()->GetSocketLocation(AttackSocketName);
+
 	const float AttackDistance = 40.0f;
 	const float AttackRadius = 25.0f;
-	
-	const FVector End = Start + GetActorForwardVector() * AttackDistance;
+
+	const FVector End =
+		Start + GetActorForwardVector() * AttackDistance;
 
 	FHitResult HitResult;
-	FCollisionQueryParams  QueryParams;
+
+	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(this);
 
-	const FCollisionShape AttackShape = FCollisionShape::MakeSphere(AttackRadius);
+	const FCollisionShape AttackShape =
+		FCollisionShape::MakeSphere(AttackRadius);
 
-	const FCollisionObjectQueryParams ObjectQueryParams(ECC_Pawn);
+	FCollisionObjectQueryParams ObjectQueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
 
 	const bool bHit = GetWorld()->SweepSingleByObjectType(
 		HitResult,
@@ -332,9 +343,29 @@ void AadauchiCharacter::AttackHitCheck() {
 		QueryParams
 	);
 
-	const FColor DebugColor = bHit ? FColor::Green : FColor::Red;
+	// “–‚½‚Á‚½Actor‚ðŽæ“¾‚·‚é
+	AActor* HitActor =
+		bHit ? HitResult.GetActor() : nullptr;
 
-	/**Display Start Sphere*/
+	// “–‚½‚Á‚½Actor‚ª“G‚©Šm”F‚·‚é
+	AEnemyCharacter* HitEnemy =
+		Cast<AEnemyCharacter>(HitActor);
+
+	// ƒfƒoƒbƒO•\Ž¦‚ÌF‚ðŒˆ‚ß‚é
+	FColor DebugColor = FColor::Red;
+
+	if (HitEnemy)
+	{
+		// “G‚É–½’†
+		DebugColor = FColor::Green;
+	}
+	else if (HitActor)
+	{
+		// •Ç‚âáŠQ•¨‚É–½’†
+		DebugColor = FColor::Yellow;
+	}
+
+	// UŒ‚”»’è‚ÌŠJŽnˆÊ’u
 	DrawDebugSphere(
 		GetWorld(),
 		Start,
@@ -344,7 +375,8 @@ void AadauchiCharacter::AttackHitCheck() {
 		false,
 		2.0f
 	);
-	/**Display End Sphere*/
+
+	// UŒ‚”»’è‚ÌI—¹ˆÊ’u
 	DrawDebugSphere(
 		GetWorld(),
 		End,
@@ -355,7 +387,7 @@ void AadauchiCharacter::AttackHitCheck() {
 		2.0f
 	);
 
-	/**Display Line (Start to End)*/
+	// UŒ‚”»’è‚ÌˆÚ“®Œo˜H
 	DrawDebugLine(
 		GetWorld(),
 		Start,
@@ -365,41 +397,55 @@ void AadauchiCharacter::AttackHitCheck() {
 		2.0f,
 		0,
 		3.0f
-
 	);
 
-	if (bHit && HitResult.GetActor()) {
-		AActor* HitActor = HitResult.GetActor();
-
+	if (HitEnemy)
+	{
 		UE_LOG(
 			LogTemp,
 			Warning,
 			TEXT("Attack hit: %s"),
-			*HitResult.GetActor()->GetName()
+			*HitEnemy->GetName()
 		);
 
 		const float DamageAmount = 10.0f;
-		
-		const float AppliedDamage = UGameplayStatics::ApplyDamage(
-			HitActor,
-			DamageAmount,
-			GetController(),
-			this,
-			UDamageType::StaticClass()
 
+		const float AppliedDamage =
+			UGameplayStatics::ApplyDamage(
+				HitEnemy,
+				DamageAmount,
+				GetController(),
+				this,
+				UDamageType::StaticClass()
+			);
+
+		UE_LOG(
+			LogTemp,
+			Warning,
+			TEXT("Applied Damage: %.1f"),
+			AppliedDamage
 		);
-
-		UE_LOG(LogTemp, Warning, TEXT("Applied Damage: %.1f"), AppliedDamage);
-	} 
-	else {
+	}
+	else if (HitActor)
+	{
+		UE_LOG(
+			LogTemp,
+			Warning,
+			TEXT("Attack blocked by: %s"),
+			*HitActor->GetName()
+		);
+	}
+	else
+	{
 		UE_LOG(
 			LogTemp,
 			Warning,
 			TEXT("Attack missed.")
-			);
+		);
 	}
-
 }
+
+
 
 AEnemyCharacter* AadauchiCharacter::FindAttackTarget() const{
 	constexpr float SearchRadius = 200.0f;
@@ -408,6 +454,8 @@ AEnemyCharacter* AadauchiCharacter::FindAttackTarget() const{
 
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
+
+
 
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(this);
